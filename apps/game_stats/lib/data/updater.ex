@@ -19,7 +19,7 @@ defmodule GameStats.Data.Updater do
   end
 
   defp update(get_stream, cache_name) do
-    Logger.debug("updating cache #{cache_name}")
+    Logger.info("updating cache #{cache_name}")
 
     stats =
       get_stream.()
