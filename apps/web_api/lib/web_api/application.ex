@@ -13,7 +13,8 @@ defmodule WebApi.Application do
       # Start a worker by calling: WebApi.Worker.start_link(arg)
       # {WebApi.Worker, arg}
       {ConCache, [name: :cache, ttl_check_interval: false]},
-      {GameStats.Data.Updater, %{get: &GameStats.Data.Download.get_stream/0, interval: 60000, cache_name: :cache}}
+      {GameStats.Data.Updater,
+       %{get: &GameStats.Data.Download.get_stream/0, interval: 60000, cache_name: :cache}}
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: WebApi.Supervisor)

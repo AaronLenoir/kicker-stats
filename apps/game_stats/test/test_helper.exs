@@ -9,7 +9,6 @@ defmodule GameStats.Test.Helper do
   end
 
   def start_dummy_cache do
-
     children = [
       %{
         id: :dummy_cache,
@@ -18,10 +17,8 @@ defmodule GameStats.Test.Helper do
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)
-
   end
 end
-
 
 ExUnit.configure(exclude: [perf: true, online: true])
 ExUnit.start()

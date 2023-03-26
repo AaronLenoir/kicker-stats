@@ -11,6 +11,7 @@ defmodule GameStats do
     |> Stream.map(&String.trim(&1))
     |> Stream.map(&parse_game(&1))
     |> Enum.reduce([], fn game, acc -> collect_from_single_game(acc, game) end)
+    |> GameStats.Collectors.Overview.collect()
   end
 
   def parse_game(csv) when is_binary(csv) do

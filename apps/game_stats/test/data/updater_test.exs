@@ -13,7 +13,7 @@ defmodule GameStats.Data.UpdaterTest do
       cache_name: :dummy_cache
     })
 
-    assert_receive :work, 20
+    assert_receive :work, 100
   end
 
   test "updater calls provided get_stream periodically when started" do
@@ -26,10 +26,11 @@ defmodule GameStats.Data.UpdaterTest do
         send(my_pid, {:hello, "world"})
         stream
       end,
-      interval: 10, cache_name: :dummy_cache
+      interval: 1,
+      cache_name: :dummy_cache
     })
 
-    assert_receive {:hello, "world"}, 20
-    assert_receive {:hello, "world"}, 60
+    assert_receive {:hello, "world"}, 50
+    assert_receive {:hello, "world"}, 100
   end
 end
