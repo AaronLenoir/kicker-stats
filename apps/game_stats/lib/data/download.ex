@@ -1,5 +1,5 @@
 defmodule GameStats.Data.Download do
-  @url "https://kicker.aaronlenoir.com/api/results/csv"
+  @url "http://kicker/api/results/csv"
 
   def get_stream() do
     HTTPStream.get(@url)
