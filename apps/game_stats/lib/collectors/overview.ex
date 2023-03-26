@@ -23,6 +23,6 @@ defmodule GameStats.Collectors.Overview do
     Map.keys(player_stats.rating_by_player)
     |> Enum.filter(fn player -> player_stats.game_count_by_player[player] >= 10 end)
     |> Enum.map(fn player -> %{player: player, rating: player_stats.rating_by_player[player]} end)
-    |> Enum.sort(fn rating1, rating2 -> rating1 <= rating2 end)
+    |> Enum.sort_by(fn x -> x.rating end, :desc)
   end
 end
