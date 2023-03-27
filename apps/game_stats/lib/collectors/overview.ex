@@ -14,7 +14,10 @@ defmodule GameStats.Collectors.Overview do
   def collect([head | tail], stats) do
     updated_stats =
       head
-      |> Map.put(:overview, %{player_ranking: collect_ranking(head)})
+      |> Map.put(:overview, %{
+        player_ranking: collect_ranking(head),
+        team_ranking: collect_ranking(head)
+      })
 
     collect(tail, [updated_stats | stats])
   end
@@ -25,4 +28,11 @@ defmodule GameStats.Collectors.Overview do
     |> Enum.map(fn player -> %{player: player, rating: player_stats.rating_by_player[player]} end)
     |> Enum.sort_by(fn x -> x.rating end, :desc)
   end
+
+  defp collect_ranking(%{team_stats: team_stats}) do
+    Map.keys(team_stats.rating_by_team)
+    |> Enum.map(fn team -> %{team: team, rating: team_stats.rating_by_team[team]} end)
+    |> Enum.sort_by(fn x -> x.rating end, :desc)
+  end
+
 end
