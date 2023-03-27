@@ -33,8 +33,10 @@ defmodule GameStats.Collectors.Team do
   end
 
   def update_rating(current_stats, game) do
-    rating_teamA = Map.get(current_stats.rating_by_team, game.teamA, 400)
-    rating_teamB = Map.get(current_stats.rating_by_team, game.teamB, 400)
+    teamA_key = "#{game.teamA.keeper} - #{game.teamA.striker}"
+    teamB_key = "#{game.teamB.keeper} - #{game.teamB.striker}"
+    rating_teamA = Map.get(current_stats.rating_by_team, teamA_key, 400)
+    rating_teamB = Map.get(current_stats.rating_by_team, teamB_key, 400)
 
     Map.update!(
       current_stats,
@@ -42,14 +44,14 @@ defmodule GameStats.Collectors.Team do
       fn current_rating ->
         current_rating
         |> update_rating(
-          "#{game.teamA.keeper} - #{game.teamA.striker}",
+          teamA_key,
           rating_teamA,
           rating_teamB,
           game.score.teamA,
           game.score.teamB
         )
         |> update_rating(
-          "#{game.teamB.keeper} - #{game.teamB.striker}",
+          teamB_key,
           rating_teamB,
           rating_teamA,
           game.score.teamB,

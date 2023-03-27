@@ -74,4 +74,16 @@ defmodule GameStats.Collectors.OverviewTest do
 
     assert length(stats.overview.team_ranking) == 2
   end
+
+  test "one game results 2 teams with the expected names" do
+    stats = "13/02/2023;playerA;playerC;10;0;playerD;playerB"
+    |> GameStats.Test.Helper.get_stream_from_string()
+    |> GameStats.collect_from_csv_stream()
+    |> Enum.find(fn x -> x.year == 2023 end)
+
+    [first | tail] = stats.overview.team_ranking
+    assert first.team == "playerA - playerC"
+    [last | _] = tail
+    assert last.team == "playerD - playerB"
+  end
 end

@@ -5,6 +5,11 @@ defmodule WebApiWeb.StatsJSON do
     get()
   end
 
+  def index(%{year: "all"}) do
+    get()
+    |> Enum.find(fn x -> is_nil(x.year) end)
+  end
+
   def index(%{year: year}) do
     {year_as_number, _} = Integer.parse(year)
 
