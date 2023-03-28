@@ -2,7 +2,8 @@ defmodule GameStats.Collectors.Player do
   def initialize do
     %{
       game_count_by_player: %{},
-      rating_by_player: %{}
+      rating_by_player: %{},
+      streak_by_player: %{}
     }
   end
 
@@ -14,6 +15,7 @@ defmodule GameStats.Collectors.Player do
     current_stats
     |> update_game_count(game)
     |> update_rating(game)
+    |> update_streak(game)
   end
 
   def update_game_count(current_stats, %{teamA: teamA, teamB: teamB}) do
@@ -84,4 +86,33 @@ defmodule GameStats.Collectors.Player do
     (Map.get(rating_by_player, keeper, 400) +
        Map.get(rating_by_player, striker, 400)) / 2
   end
+
+  def update_streak(current_stats, game) do
+
+    current_stats
+    |> update_streak(game.teamA.keeper, game.score.teamA)
+    |> update_streak(game.teamA.striker, game.score.teamA)
+    |> update_streak(game.teamB.keeper, game.score.teamB)
+    |> update_streak(game.teamB.striker, game.score.teamB)
+
+  end
+
+  def update_streak(current_stats, player, score) do
+    current_stats
+    |> Map.update!(:streak_by_player, fn x -> update_streak_for_player(x, player, score) end)
+  end
+
+  def update_streak_for_player(streak_by_player, player, 10) do
+    streak_by_player
+    |> Map.update(player, %{current: 1, highest: 1}, fn
+        x when x.current + 1 > x.highest -> %{current: x.current + 1, highest: x.current + 1}
+        x -> %{current: x.current + 1, highest: x.highest}
+      end)
+  end
+
+  def update_streak_for_player(streak_by_player, player, _) do
+    streak_by_player
+    |> Map.update(player, %{current: 1, highest: 1}, fn x -> %{current: 0, highest: x.highest} end)
+  end
+
 end
