@@ -5,7 +5,7 @@ defmodule GameStats.Collectors.PlayerStats do
 
   alias GameStats.Collectors.PlayerStats
 
-  @derive {Jason.Encoder, only: [:name, :games_played]}
+  @derive {Jason.Encoder, only: [:name, :games_played, :games_won]}
   defstruct [
     :name,
     :games_played,
@@ -24,6 +24,8 @@ defmodule GameStats.Collectors.PlayerStats do
   @doc """
   Updates the given collection of user stats based on the given game
   """
+  def collect(nil, game), do: collect(%{}, game)
+
   def collect(current, game) do
     current
     |> collect(game, [game.teamA.keeper, game.teamA.striker, game.teamB.keeper, game.teamB.striker])

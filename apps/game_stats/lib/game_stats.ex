@@ -3,7 +3,8 @@ defmodule GameStats do
     year: nil,
     game_stats: GameStats.Collectors.Game.initialize(),
     player_stats: GameStats.Collectors.Player.initialize(),
-    team_stats: GameStats.Collectors.Team.initialize()
+    team_stats: GameStats.Collectors.Team.initialize(),
+    new_player_stats: %{}
   }
 
   def collect_from_csv_stream(stream) do
@@ -78,7 +79,7 @@ defmodule GameStats do
       game_stats: GameStats.Collectors.Game.collect(game, current_stats.game_stats),
       player_stats: GameStats.Collectors.Player.collect(game, current_stats.player_stats),
       team_stats: GameStats.Collectors.Team.collect(game, current_stats.team_stats),
-      new_player_stats: GameStats.Collectors.PlayerStats.collect(%{}, game)
+      new_player_stats: GameStats.Collectors.PlayerStats.collect(current_stats.new_player_stats, game)
     }
   end
 end
