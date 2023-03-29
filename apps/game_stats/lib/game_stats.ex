@@ -77,7 +77,8 @@ defmodule GameStats do
       year: year,
       game_stats: GameStats.Collectors.Game.collect(game, current_stats.game_stats),
       player_stats: GameStats.Collectors.Player.collect(game, current_stats.player_stats),
-      team_stats: GameStats.Collectors.Team.collect(game, current_stats.team_stats)
+      team_stats: GameStats.Collectors.Team.collect(game, current_stats.team_stats),
+      new_player_stats: GameStats.Collectors.PlayerStats.collect(%{}, game)
     }
   end
 end

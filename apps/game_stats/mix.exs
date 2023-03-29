@@ -27,8 +27,8 @@ defmodule GameStats.MixProject do
     [
       {:http_stream, "~> 1.0.0"},
       {:httpoison, "~> 1.7.0"},
-      {:nimble_csv, "~> 1.1"},
-      {:con_cache, "~> 0.13"}
+      {:con_cache, "~> 0.13"},
+      {:jason, "~> 1.2"}
     ]
   end
 end

@@ -1,7 +1,7 @@
 defmodule GameStats.Data.Download do
   # TODO: Get from Configuration
-  @url "http://kicker/api/results/csv"
-  #@url "https://kicker.aaronlenoir.com/api/results/csv"
+  #@url "http://kicker/api/results/csv"
+  @url "https://kicker.aaronlenoir.com/api/results/csv"
 
   def get_stream() do
     HTTPStream.get(@url)
