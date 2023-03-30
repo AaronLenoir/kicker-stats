@@ -4,6 +4,7 @@ defmodule GameStats.Collectors.PlayerStats do
   """
 
   alias GameStats.Collectors.PlayerStats
+  alias GameStats.Model.Game
 
   @derive {Jason.Encoder, only: [:name, :games_played, :games_won]}
   defstruct [
@@ -24,11 +25,14 @@ defmodule GameStats.Collectors.PlayerStats do
   @doc """
   Updates the given collection of user stats based on the given game
   """
-  def collect(nil, game), do: collect(%{}, game)
-
-  def collect(current, game) do
+  def collect(current, game) when is_map(current) do
     current
-    |> collect(game, [game.teamA.keeper, game.teamA.striker, game.teamB.keeper, game.teamB.striker])
+    |> collect(game, [
+      game.teamA.keeper,
+      game.teamA.striker,
+      game.teamB.keeper,
+      game.teamB.striker
+    ])
   end
 
   defp collect(current, _game, []), do: current
@@ -42,38 +46,21 @@ defmodule GameStats.Collectors.PlayerStats do
 
   defp collect_games_played(current, player) do
     current
-    |> Map.update(player, %{new(player) | games_played: 1}, fn stats -> update(stats, :games_played, stats.games_played + 1) end)
+    |> Map.update(player, %{new(player) | games_played: 1}, fn stats ->
+      %{stats | games_played: stats.games_played + 1}
+    end)
   end
 
   defp collect_games_won(current, game, player) do
-    if player_won(game, player) do
-      current
-      |> Map.update(player, %{new(player) | games_won: 1}, fn stats -> update(stats, :games_won, stats.games_won + 1) end)
-    else
-      current
-    end
+    cond do
+      Game.won?(game, player) ->
+        current
+        |> Map.update(player, %{new(player) | games_won: 1}, fn stats ->
+          %{stats | games_won: stats.games_won + 1}
+        end)
 
-  end
-
-  # TODO: Move this to the Game module (also, make the Game module)
-  defp player_won(game, player) do
-    case game do
-      %{teamA: %{keeper: ^player}, score: %{teamA: 10}} ->
-        true
-      %{teamA: %{striker: ^player}, score: %{teamA: 10}} ->
-        true
-      %{teamB: %{striker: ^player}, score: %{teamB: 10}} ->
-        true
-      %{teamB: %{striker: ^player}, score: %{teamB: 10}} ->
-        true
-      _ ->
-        false
+      true ->
+        current
     end
   end
-
-  defp update(stats, key, value) do
-    stats
-    |> Map.update!(key, fn _ -> value end)
-  end
-
 end
