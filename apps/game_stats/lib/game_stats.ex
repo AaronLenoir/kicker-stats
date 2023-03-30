@@ -40,11 +40,13 @@ defmodule GameStats do
   end
 
   defp collect_from_single_game(acc, game, year) do
-    if Enum.any?(acc, fn x -> x.year == year end) do
-      acc
-      |> Enum.map(fn x -> if x.year == year, do: collect(x, game, year), else: x end)
-    else
-      [collect(new(), game, year) | acc]
+    cond do
+      Enum.any?(acc, fn x -> x.year == year end) ->
+        acc
+        |> Enum.map(fn x -> if x.year == year, do: collect(x, game, year), else: x end)
+
+      true ->
+        [collect(new(), game, year) | acc]
     end
   end
 

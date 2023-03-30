@@ -21,4 +21,15 @@ defmodule GameStatsTest do
 
     assert length(stats) == 3
   end
+
+  test "collect_from_csv_stream ignores invalid games" do
+    stats =
+      GameStats.Test.Helper.get_stream_from_string(
+        "13/02/2022;playerA;playerB;10;0;playerC;playerD\r\n13/02/2022;playerA;playerB;XX;0;playerC;playerD\r\nThisIsNotAGame"
+      )
+      |> GameStats.collect_from_csv_stream()
+      |> Enum.find(fn stats -> stats.year == 2022 end)
+
+    assert stats.game_stats.games_played == 1
+  end
 end
