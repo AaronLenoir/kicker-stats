@@ -1,16 +1,18 @@
 defmodule GameStats.Collectors.PlayerStats do
   @doc """
-  Collects stats that relate single players
+  Collects stats that relate a single players
   """
 
   alias GameStats.Collectors.PlayerStats
+  alias GameStats.Collectors.PlayerStatsRating
   alias GameStats.Model.Game
 
-  @derive {Jason.Encoder, only: [:name, :games_played, :games_won]}
+  @derive {Jason.Encoder, only: [:name, :games_played, :games_won, :rating]}
   defstruct [
     :name,
     :games_played,
-    :games_won
+    :games_won,
+    :rating
   ]
 
   @type t :: %PlayerStats{}
@@ -19,14 +21,15 @@ defmodule GameStats.Collectors.PlayerStats do
   Returns a new `GameStats.Collectors.PlayerStats` struct for the given player
   """
   def new(player) do
-    %PlayerStats{name: player, games_played: 0, games_won: 0}
+    %PlayerStats{name: player, games_played: 0, games_won: 0, rating: 400}
   end
 
   @doc """
   Updates the given collection of user stats based on the given game
   """
-  def collect(current, game) when is_map(current) do
+  def collect(current, %Game{} = game) when is_map(current) do
     current
+    |> PlayerStatsRating.collect(game)
     |> collect(game, [
       game.teamA.keeper,
       game.teamA.striker,

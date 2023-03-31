@@ -35,8 +35,8 @@ defmodule GameStats do
     {year, _} = Integer.parse(String.slice(game.date, 6, 4))
 
     acc
-    |> collect_from_single_game(game, year)
     |> collect_from_single_game(game, nil)
+    |> collect_from_single_game(game, year)
   end
 
   defp collect_from_single_game(acc, game, year) do
