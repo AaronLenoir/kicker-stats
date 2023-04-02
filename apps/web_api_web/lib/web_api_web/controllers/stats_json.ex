@@ -22,7 +22,7 @@ defmodule WebApiWeb.StatsJSON do
       Logger.debug("not found in cache, downloading now")
 
       GameStats.Data.Download.get_stream()
-      |> GameStats.collect_from_csv_stream()
+      |> GameStatsCollector.collect_from_csv_stream()
     end)
   end
 end

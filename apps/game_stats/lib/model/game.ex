@@ -4,6 +4,7 @@ defmodule GameStats.Model.Game do
   """
 
   alias GameStats.Model.Game
+  alias GameStats.Model.Team
 
   defstruct [
     :date,
@@ -38,8 +39,8 @@ defmodule GameStats.Model.Game do
       when is_integer(scoreA) and is_integer(scoreB) do
     %Game{
       date: date,
-      teamA: %{keeper: keeperA, striker: strikerA, score: scoreA},
-      teamB: %{keeper: keeperB, striker: strikerB, score: scoreB}
+      teamA: %Team{keeper: keeperA, striker: strikerA, score: scoreA},
+      teamB: %Team{keeper: keeperB, striker: strikerB, score: scoreB}
     }
   end
 
@@ -48,12 +49,13 @@ defmodule GameStats.Model.Game do
   def parse(_), do: nil
 
   @doc """
-  Check if a given player has won the game
+  Check if a given player or team has won the game
   """
   def won?(%{teamA: %{keeper: player, score: 10}}, player), do: true
   def won?(%{teamA: %{striker: player, score: 10}}, player), do: true
   def won?(%{teamB: %{keeper: player, score: 10}}, player), do: true
   def won?(%{teamB: %{striker: player, score: 10}}, player), do: true
+  def won?(_game, %{score: 10}), do: true
   def won?(_game, _player), do: false
 
   @doc """

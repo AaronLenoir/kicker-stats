@@ -6,7 +6,7 @@ defmodule GameStats.Data.DownloadTest do
   test "csv is read from stream" do
     stats =
       GameStats.Data.Download.get_stream()
-      |> GameStats.collect_from_csv_stream()
+      |> GameStatsCollector.collect_from_csv_stream()
 
     assert length(stats) > 0
   end

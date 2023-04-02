@@ -33,6 +33,20 @@ defmodule GameStats.Model.GameTest do
     assert not won?(%{date: "01/01/2023", teamB: %{striker: "Player A", score: 9}}, "Player A")
   end
 
+  test "won? returns true if team has won, false otherwise" do
+    assert won?(%{date: "01/01/2023", teamA: %{keeper: "Player A", score: 10}}, %{
+             keeper: "Player A",
+             striker: "Player B",
+             score: 10
+           })
+
+    assert not won?(%{date: "01/01/2023", teamA: %{keeper: "Player A", score: 10}}, %{
+             keeper: "Player A",
+             striker: "Player B",
+             score: 9
+           })
+  end
+
   test "find_team finds the correct team" do
     team = find_team(parse("01/01/2020;Player A;Player B;2;10;Player C;Player D"), "Player A")
     assert team.keeper == "Player A" and team.striker == "Player B"

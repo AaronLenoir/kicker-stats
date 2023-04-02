@@ -23,7 +23,7 @@ defmodule GameStats.Data.Updater do
 
     stats =
       get_stream.()
-      |> GameStats.collect_from_csv_stream()
+      |> GameStatsCollector.collect_from_csv_stream()
 
     ConCache.put(cache_name, :current_stats, stats)
   end
