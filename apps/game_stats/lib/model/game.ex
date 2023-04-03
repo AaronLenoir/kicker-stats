@@ -75,10 +75,10 @@ defmodule GameStats.Model.Game do
       do: true
 
   def won?(
-        %{teamB: %{keeper: keeper, striker: striker, score: scoreB}, teamA: %{score: scoreA}},
-        %Team{keeper: keeper, striker: striker}
+        %{teamB: teamB, teamA: %{score: scoreA}},
+        %Team{keeper: _keeper, striker: _striker, score: score} = teamB
       )
-      when scoreB > scoreA,
+      when score > scoreA,
       do: true
 
   def won?(_game, _player) do
