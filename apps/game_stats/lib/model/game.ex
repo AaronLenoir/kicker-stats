@@ -114,9 +114,4 @@ defmodule GameStats.Model.Game do
 
   def list_players(%Game{} = game),
     do: [game.teamA.keeper, game.teamA.striker, game.teamB.keeper, game.teamB.striker]
-
-  def find_winners(%{teamA: %{score: 10}} = game), do: game.teamA
-  def find_winners(%{teamB: %{score: 10}} = game), do: game.teamB
-  def find_losers(%{teamA: %{score: score}} = game) when score < 10, do: game.teamA
-  def find_losers(%{teamB: %{score: score}} = game) when score < 10, do: game.teamB
 end

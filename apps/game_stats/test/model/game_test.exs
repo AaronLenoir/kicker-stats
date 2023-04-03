@@ -93,14 +93,4 @@ defmodule GameStats.Model.GameTest do
     assert playerC == "Player C"
     assert playerD == "Player D"
   end
-
-  test "find_winners returns teamA as winner (if they won)" do
-    %{keeper: "Player A", striker: "Player B"} =
-      find_winners(parse("01/01/2020;Player A;Player B;10;2;Player C;Player D"))
-  end
-
-  test "find_losers returns teamB as loser (if they lost)" do
-    %{keeper: "Player C", striker: "Player D"} =
-      find_losers(parse("01/01/2020;Player A;Player B;10;2;Player C;Player D"))
-  end
 end
