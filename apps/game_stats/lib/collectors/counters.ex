@@ -13,13 +13,14 @@ defmodule GameStats.Collectors.Counters do
   end
 
   def update(%{} = stats, %Stats{} = previous, %Game{} = game, %Team{} = team) do
-    update(stats, previous, game, team, Team.get_name(team))
+    update(stats, previous, game, team, team)
   end
 
   def update(%{} = stats, %Stats{} = _previous, %Game{} = game, %Team{} = _team, player) do
     stats
     |> update_games_played()
     |> update_games_won(game, player)
+    |> update_streak(game, player)
   end
 
   defp update_games_played(stats) do
@@ -33,6 +34,17 @@ defmodule GameStats.Collectors.Counters do
 
       true ->
         stats
+    end
+  end
+
+  defp update_streak(stats, game, player) do
+    cond do
+      Game.won?(game, player) and (stats.streak + 1 > stats.longest_streak) ->
+        %{stats | streak: stats.streak + 1, longest_streak: stats.longest_streak + 1}
+      Game.won?(game, player) ->
+        %{stats | streak: stats.streak + 1}
+      true ->
+        %{stats | streak: 0}
     end
   end
 end

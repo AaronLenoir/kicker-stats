@@ -1,7 +1,5 @@
 defmodule GameStatsCollector do
   alias GameStats.Collectors.Collector
-  alias GameStats.Collectors.Counters
-  alias GameStats.Collectors.Ratings
   alias GameStats.Model.Stats
   alias GameStats.Model.Game
 
@@ -39,8 +37,5 @@ defmodule GameStatsCollector do
     current_stats
     |> Collector.collect(game, GameStats.Collectors.Counters)
     |> Collector.collect(game, GameStats.Collectors.Ratings)
-
-    # |> Counters.collect(game)
-    # |> Ratings.collect(game)
   end
 end

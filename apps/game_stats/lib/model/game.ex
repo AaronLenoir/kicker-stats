@@ -51,12 +51,39 @@ defmodule GameStats.Model.Game do
   @doc """
   Check if a given player or team has won the game
   """
-  def won?(%{teamA: %{keeper: player, score: 10}}, player), do: true
-  def won?(%{teamA: %{striker: player, score: 10}}, player), do: true
-  def won?(%{teamB: %{keeper: player, score: 10}}, player), do: true
-  def won?(%{teamB: %{striker: player, score: 10}}, player), do: true
-  def won?(_game, %{score: 10}), do: true
-  def won?(_game, _player), do: false
+  def won?(%{teamA: %{keeper: player, score: scoreA}, teamB: %{score: scoreB}}, player)
+      when scoreA > scoreB,
+      do: true
+
+  def won?(%{teamA: %{striker: player, score: scoreA}, teamB: %{score: scoreB}}, player)
+      when scoreA > scoreB,
+      do: true
+
+  def won?(%{teamB: %{keeper: player, score: scoreB}, teamA: %{score: scoreA}}, player)
+      when scoreB > scoreA,
+      do: true
+
+  def won?(%{teamB: %{striker: player, score: scoreB}, teamA: %{score: scoreA}}, player)
+      when scoreB > scoreA,
+      do: true
+
+  def won?(
+        %{teamA: teamA, teamB: %{score: scoreB}},
+        %Team{keeper: _keeper, striker: _striker, score: score} = teamA
+      )
+      when score > scoreB,
+      do: true
+
+  def won?(
+        %{teamB: %{keeper: keeper, striker: striker, score: scoreB}, teamA: %{score: scoreA}},
+        %Team{keeper: keeper, striker: striker}
+      )
+      when scoreB > scoreA,
+      do: true
+
+  def won?(_game, _player) do
+    false
+  end
 
   @doc """
   Finds the team for the given played
@@ -66,6 +93,18 @@ defmodule GameStats.Model.Game do
   def find_team(%{teamB: %{keeper: player}} = game, player), do: game.teamB
   def find_team(%{teamB: %{striker: player}} = game, player), do: game.teamB
   def find_team(_, player), do: {:error, "no team for player #{player}"}
+
+  def find_opponent(%{teamA: %{keeper: keeper, striker: striker}} = game, %Team{
+        keeper: keeper,
+        striker: striker
+      }),
+      do: game.teamB
+
+  def find_opponent(%{teamB: %{keeper: keeper, striker: striker}} = game, %Team{
+        keeper: keeper,
+        striker: striker
+      }),
+      do: game.teamA
 
   def find_opponent(%{teamA: %{keeper: player}} = game, player), do: game.teamB
   def find_opponent(%{teamA: %{striker: player}} = game, player), do: game.teamB

@@ -3,6 +3,7 @@ defmodule GameStats.Model.GameTest do
   doctest GameStats.Model.Game
 
   import GameStats.Model.Game
+  alias GameStats.Model.Team
 
   test "parse with invalid csv returns nil", do: assert(nil == parse("this;is;not;a;game"))
 
@@ -22,29 +23,35 @@ defmodule GameStats.Model.GameTest do
   end
 
   test "won? returns true if player has won, false otherwise" do
-    assert won?(%{date: "01/01/2023", teamA: %{keeper: "Player A", score: 10}}, "Player A")
-    assert won?(%{date: "01/01/2023", teamA: %{striker: "Player A", score: 10}}, "Player A")
-    assert not won?(%{date: "01/01/2023", teamA: %{keeper: "Player A", score: 9}}, "Player A")
-    assert not won?(%{date: "01/01/2023", teamA: %{striker: "Player A", score: 9}}, "Player A")
+    assert won?(parse("01/01/2020;Player A;Player B;10;0;Player C;Player D"), "Player A")
+    assert won?(parse("01/01/2020;Player B;Player A;10;0;Player C;Player D"), "Player A")
+    assert won?(parse("01/01/2020;Player B;Player C;0;10;Player A;Player D"), "Player A")
+    assert won?(parse("01/01/2020;Player B;Player C;0;10;Player D;Player A"), "Player A")
+    assert not won?(parse("01/01/2020;Player A;Player B;0;10;Player C;Player D"), "Player A")
+    assert not won?(parse("01/01/2020;Player B;Player A;0;10;Player C;Player D"), "Player A")
+  end
 
-    assert won?(%{date: "01/01/2023", teamB: %{keeper: "Player A", score: 10}}, "Player A")
-    assert won?(%{date: "01/01/2023", teamB: %{striker: "Player A", score: 10}}, "Player A")
-    assert not won?(%{date: "01/01/2023", teamB: %{keeper: "Player A", score: 9}}, "Player A")
-    assert not won?(%{date: "01/01/2023", teamB: %{striker: "Player A", score: 9}}, "Player A")
+  test "won? returns true if player has won, false otherwise also with greater than 10 results" do
+    assert won?(
+             %{
+               date: "01/01/2023",
+               teamA: %{keeper: "Player A", score: 14},
+               teamB: %{keeper: "Player B", score: 12}
+             },
+             "Player A"
+           )
   end
 
   test "won? returns true if team has won, false otherwise" do
-    assert won?(%{date: "01/01/2023", teamA: %{keeper: "Player A", score: 10}}, %{
-             keeper: "Player A",
-             striker: "Player B",
-             score: 10
-           })
+    game = parse("01/01/2020;Player A;Player B;10;0;Player C;Player D")
+    assert won?(game, game.teamA)
+    assert not won?(game, game.teamB)
+  end
 
-    assert not won?(%{date: "01/01/2023", teamA: %{keeper: "Player A", score: 10}}, %{
-             keeper: "Player A",
-             striker: "Player B",
-             score: 9
-           })
+  test "won? returns true if team has won, false otherwise even with greater than 10 results" do
+    game = parse("01/01/2020;Player A;Player B;17;19;Player C;Player D")
+    assert not won?(game, game.teamA)
+    assert won?(game, game.teamB)
   end
 
   test "find_team finds the correct team" do
@@ -62,9 +69,19 @@ defmodule GameStats.Model.GameTest do
     assert team.keeper == "Player C" and team.striker == "Player D"
   end
 
-  test "find_opponet for player not in the game returns error" do
+  test "find_opponent for player not in the game returns error" do
     {:error, _} =
       find_opponent(parse("01/01/2020;Player A;Player B;2;10;Player C;Player D"), "Player X")
+  end
+
+  test "find_opponent with team finds the correct opponent team" do
+    game = parse("01/01/2020;Player A;Player B;2;10;Player C;Player D")
+
+    teamB = find_opponent(game, %Team{keeper: "Player A", striker: "Player B"})
+    teamA = find_opponent(game, %Team{keeper: "Player C", striker: "Player D"})
+
+    assert teamA.keeper == "Player A" and teamA.striker == "Player B"
+    assert teamB.keeper == "Player C" and teamB.striker == "Player D"
   end
 
   test "list_players returns all player names for a game in a List" do
