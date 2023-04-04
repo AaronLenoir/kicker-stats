@@ -51,7 +51,25 @@ defmodule GameStats.Collectors.Counters do
     end
   end
 
+  defp update_goals_allowed(stats, game, %Team{} = team) do
+    %{stats | goals_allowed: stats.goals_allowed + Game.find_opponent(game, team).score}
+  end
+
   defp update_goals_allowed(stats, game, player) do
-    %{stats | goals_allowed: stats.goals_allowed + Game.find_opponent(game, player).score}
+    team = Game.find_team(game, player)
+
+    case team do
+      %Team{keeper: _, striker: ^player} ->
+        stats
+
+      %Team{keeper: ^player, striker: _} ->
+        %{stats |
+            games_as_keeper: stats.games_as_keeper + 1,
+            goals_allowed: stats.goals_allowed + Game.find_opponent(game, player).score
+        }
+
+      _ ->
+        stats
+    end
   end
 end

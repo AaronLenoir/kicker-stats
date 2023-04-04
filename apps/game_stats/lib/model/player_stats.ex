@@ -14,6 +14,7 @@ defmodule GameStats.Model.PlayerStats do
              :highest_rating,
              :streak,
              :longest_streak,
+             :games_as_keeper,
              :goals_allowed
            ]}
   defstruct [
@@ -24,6 +25,7 @@ defmodule GameStats.Model.PlayerStats do
     :highest_rating,
     :streak,
     :longest_streak,
+    :games_as_keeper,
     :goals_allowed
   ]
 
@@ -41,6 +43,7 @@ defmodule GameStats.Model.PlayerStats do
       highest_rating: 400,
       streak: 0,
       longest_streak: 0,
+      games_as_keeper: 0,
       goals_allowed: 0
     }
   end
