@@ -21,6 +21,7 @@ defmodule GameStats.Collectors.Counters do
     |> update_games_played()
     |> update_games_won(game, player)
     |> update_streak(game, player)
+    |> update_goals_allowed(game, player)
   end
 
   defp update_games_played(stats) do
@@ -48,5 +49,9 @@ defmodule GameStats.Collectors.Counters do
       true ->
         %{stats | streak: 0}
     end
+  end
+
+  defp update_goals_allowed(stats, game, player) do
+    %{stats | goals_allowed: stats.goals_allowed + Game.find_opponent(game, player).score}
   end
 end

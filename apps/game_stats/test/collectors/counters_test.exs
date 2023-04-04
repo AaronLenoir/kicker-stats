@@ -101,4 +101,29 @@ defmodule GameStats.Collectors.CountersTest do
     assert stats.streak == 1
     assert stats.longest_streak == 2
   end
+
+  test "update counts 1 3 goals allowed for a player" do
+    stats =
+      update(
+        PlayerStats.new("Player A"),
+        Stats.new(),
+        Game.parse("01/01/2023;Player A;Player B;10;3;Player C;Player D"),
+        %Team{keeper: "Player A", striker: "Player B", score: 10},
+        "Player A"
+      )
+
+    assert stats.goals_allowed == 3
+  end
+
+  test "update counts 1 4 goals allowed for a team" do
+    stats =
+      update(
+        TeamStats.new("Player A - Player B"),
+        Stats.new(),
+        Game.parse("01/01/2023;Player A;Player B;10;4;Player C;Player D"),
+        %Team{keeper: "Player A", striker: "Player B", score: 10}
+      )
+
+    assert stats.goals_allowed == 4
+  end
 end

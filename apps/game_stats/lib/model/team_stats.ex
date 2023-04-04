@@ -13,7 +13,8 @@ defmodule GameStats.Model.TeamStats do
              :rating,
              :highest_rating,
              :streak,
-             :longest_streak
+             :longest_streak,
+             :goals_allowed
            ]}
   defstruct [
     :name,
@@ -22,7 +23,8 @@ defmodule GameStats.Model.TeamStats do
     :rating,
     :highest_rating,
     :streak,
-    :longest_streak
+    :longest_streak,
+    :goals_allowed
   ]
 
   @type t :: %TeamStats{}
@@ -38,7 +40,8 @@ defmodule GameStats.Model.TeamStats do
       rating: 400,
       highest_rating: 400,
       streak: 0,
-      longest_streak: 0
+      longest_streak: 0,
+      goals_allowed: 0
     }
   end
 end
