@@ -42,5 +42,4 @@ defmodule GameStats.Collectors.CollectorTest do
 
     assert stats.team["Player A - Player B"].rating == 416
   end
-
 end

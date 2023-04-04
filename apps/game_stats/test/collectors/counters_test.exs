@@ -85,18 +85,18 @@ defmodule GameStats.Collectors.CountersTest do
         %Team{keeper: "Player A", striker: "Player B", score: 10},
         "Player A"
       )
-    |> update(
-      Stats.new(),
-      Game.parse("01/01/2023;Player A;Player B;0;10;Player C;Player D"),
-      %Team{keeper: "Player A", striker: "Player B", score: 10},
-      "Player A"
-    )
-    |> update(
-      Stats.new(),
-      Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D"),
-      %Team{keeper: "Player A", striker: "Player B", score: 10},
-      "Player A"
-    )
+      |> update(
+        Stats.new(),
+        Game.parse("01/01/2023;Player A;Player B;0;10;Player C;Player D"),
+        %Team{keeper: "Player A", striker: "Player B", score: 10},
+        "Player A"
+      )
+      |> update(
+        Stats.new(),
+        Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D"),
+        %Team{keeper: "Player A", striker: "Player B", score: 10},
+        "Player A"
+      )
 
     assert stats.streak == 1
     assert stats.longest_streak == 2

@@ -22,6 +22,7 @@ defmodule GameStats.Collectors.Ratings do
     delta = Elo.update_score(team.score, opponent.score, stats.rating, opponent_stats.rating)
 
     %{stats | rating: stats.rating + delta}
+    |> update_highest_rating()
   end
 
   def update(
@@ -34,17 +35,29 @@ defmodule GameStats.Collectors.Ratings do
     opponent = Game.find_opponent(game, player)
 
     opponent_average =
-    ([Map.get(previous.player, opponent.keeper, %{rating: 400}),
-      Map.get(previous.player, opponent.striker, %{rating: 400})]
-    |> Enum.reduce(0, fn stats, acc -> stats.rating + acc end)) /2
+      ([
+         Map.get(previous.player, opponent.keeper, %{rating: 400}),
+         Map.get(previous.player, opponent.striker, %{rating: 400})
+       ]
+       |> Enum.reduce(0, fn stats, acc -> stats.rating + acc end)) / 2
 
     our_average =
-    ([Map.get(previous.player, team.keeper, %{rating: 400}),
-      Map.get(previous.player, team.striker, %{rating: 400})]
-    |> Enum.reduce(0, fn stats, acc -> stats.rating + acc end)) /2
+      ([
+         Map.get(previous.player, team.keeper, %{rating: 400}),
+         Map.get(previous.player, team.striker, %{rating: 400})
+       ]
+       |> Enum.reduce(0, fn stats, acc -> stats.rating + acc end)) / 2
 
     delta = Elo.update_score(team.score, opponent.score, our_average, opponent_average)
 
     %{stats | rating: stats.rating + delta}
+    |> update_highest_rating()
   end
+
+  def update_highest_rating(%{rating: rating, highest_rating: highest_rating} = ratings)
+      when rating > highest_rating do
+    %{ratings | highest_rating: rating}
+  end
+
+  def update_highest_rating(ratings), do: ratings
 end
