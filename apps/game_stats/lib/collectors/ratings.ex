@@ -24,7 +24,6 @@ defmodule GameStats.Collectors.Ratings do
     %{stats | rating: stats.rating + delta}
     |> update_highest_rating()
   end
-
   def update(
         %PlayerStats{} = stats,
         %Stats{} = previous,
@@ -54,10 +53,30 @@ defmodule GameStats.Collectors.Ratings do
     |> update_highest_rating()
   end
 
-  def update_highest_rating(%{rating: rating, highest_rating: highest_rating} = ratings)
+  def summary(%Stats{} = stats) do
+    %{stats | player: update_highest_ranking_team(stats.team, stats.player)}
+  end
+
+  defp update_highest_rating(%{rating: rating, highest_rating: highest_rating} = ratings)
       when rating > highest_rating do
     %{ratings | highest_rating: rating}
   end
 
-  def update_highest_rating(ratings), do: ratings
+  defp update_highest_rating(ratings), do: ratings
+
+  defp update_highest_ranking_team(%{} = team_stats, %{} = player_stats) do
+    Map.keys(player_stats)
+    |> Enum.reduce(player_stats, fn player, acc -> %{acc | player => player_stats[player] |> update_highest_ranking_team(team_stats, player)} end)
+  end
+
+  defp update_highest_ranking_team(%PlayerStats{} = stats, %{} = team_stats, player) do
+    # TODO: If we have the overview, we have the full team ranking, which is an ordered list
+    # so then we can just get the first team with that player instead of doing this contraption here
+    first_team = Map.keys(team_stats)
+    |> Enum.filter(fn x -> String.contains?(x, player) end)
+    |> Enum.sort(fn x, y -> team_stats[x].rating >= team_stats[y].rating end)
+    |> List.first()
+
+    %{stats | highest_ranking_team: %{team: first_team, rating: team_stats[first_team].rating}}
+  end
 end

@@ -7,7 +7,13 @@ defmodule GameStatsCollector do
     stream
     |> Stream.map(&String.trim(&1))
     |> Stream.map(&Game.parse(&1))
+    |> collect_from_games
+  end
+
+  def collect_from_games(games) do
+    games
     |> Enum.reduce([], fn game, acc -> collect_from_single_game(acc, game) end)
+    |> Enum.map(fn stats -> stats |> collect_summary() end)
   end
 
   defp collect_from_single_game(acc, nil) do
@@ -37,5 +43,11 @@ defmodule GameStatsCollector do
     current_stats
     |> Collector.collect(game, GameStats.Collectors.Counters)
     |> Collector.collect(game, GameStats.Collectors.Ratings)
+  end
+
+  defp collect_summary(%Stats{} = stats) do
+    stats
+    |> Collector.summary(GameStats.Collectors.Counters)
+    |> Collector.summary(GameStats.Collectors.Ratings)
   end
 end

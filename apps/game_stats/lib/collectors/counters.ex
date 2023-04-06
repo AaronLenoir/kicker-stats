@@ -24,6 +24,10 @@ defmodule GameStats.Collectors.Counters do
     |> update_goals_allowed(game, player)
   end
 
+  def summary(%Stats{} = stats) do
+    stats
+  end
+
   defp update_games_played(stats) do
     %{stats | games_played: stats.games_played + 1}
   end

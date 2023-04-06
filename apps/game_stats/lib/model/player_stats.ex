@@ -15,7 +15,8 @@ defmodule GameStats.Model.PlayerStats do
              :streak,
              :longest_streak,
              :games_as_keeper,
-             :goals_allowed
+             :goals_allowed,
+             :highest_ranking_team
            ]}
   defstruct [
     :name,
@@ -26,7 +27,8 @@ defmodule GameStats.Model.PlayerStats do
     :streak,
     :longest_streak,
     :games_as_keeper,
-    :goals_allowed
+    :goals_allowed,
+    :highest_ranking_team
   ]
 
   @type t :: %PlayerStats{}
@@ -44,7 +46,8 @@ defmodule GameStats.Model.PlayerStats do
       streak: 0,
       longest_streak: 0,
       games_as_keeper: 0,
-      goals_allowed: 0
+      goals_allowed: 0,
+      highest_ranking_team: %{}
     }
   end
 end
