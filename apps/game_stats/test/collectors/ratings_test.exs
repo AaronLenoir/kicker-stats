@@ -66,25 +66,60 @@ defmodule GameStats.Collectors.RatingsTest do
 
     player_stats = stats.player["Player A"]
 
-    IO.inspect(player_stats)
-
-    assert player_stats.highest_ranking_team == %{team: "Player A - Player B", rating: 416}
+    assert %{"Player A - Player B" => 1} = player_stats.highest_ranking_team
   end
 
   test "the highest ranking team for Player A is the team that won 3 times" do
     stats = GameStatsCollector.collect_from_games([
       Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D"),
       Game.parse("01/01/2023;Player A;Player B;00;10;Player C;Player D"),
-      Game.parse("01/01/2023;Player B;Player B;0;10;Player A;Player D"),
-      Game.parse("01/01/2023;Player B;Player B;0;10;Player A;Player D"),
-      Game.parse("01/01/2023;Player B;Player B;0;10;Player A;Player D")
+      Game.parse("01/01/2023;Player X;Player B;0;10;Player A;Player D"),
+      Game.parse("01/01/2023;Player X;Player B;0;10;Player A;Player D"),
+      Game.parse("01/01/2023;Player X;Player B;0;10;Player A;Player D")
     ])
     |> Enum.find(fn stats -> stats.year == 2023 end)
 
-    player_stats = stats.player["Player A"]
+    assert %{"Player A - Player D" => 1} = stats.player["Player A"].highest_ranking_team
+    assert %{"Player C - Player D" => 2} = stats.player["Player C"].highest_ranking_team
+  end
 
-    IO.inspect(player_stats)
+  test "average team rating should be 416 (after one won game)" do
+    stats = GameStatsCollector.collect_from_games([
+      Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D")
+    ])
+    |> Enum.find(fn stats -> stats.year == 2023 end)
 
-    assert player_stats.highest_ranking_team.team == "Player A - Player D"
+    assert stats.player["Player A"].average_team_rating == 416
+  end
+
+  test "average team rating should be 431 (after two won games)" do
+    stats = GameStatsCollector.collect_from_games([
+      Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D"),
+      Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D")
+    ])
+    |> Enum.find(fn stats -> stats.year == 2023 end)
+
+    assert stats.player["Player A"].average_team_rating == 431
+  end
+
+  test "average team rating should be 416 (after two won games but with different teams)" do
+    stats = GameStatsCollector.collect_from_games([
+      Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D"),
+      Game.parse("01/01/2023;Player A;Player X;10;0;Player Y;Player Z")
+    ])
+    |> Enum.find(fn stats -> stats.year == 2023 end)
+
+    assert stats.player["Player A"].average_team_rating == 416
+  end
+
+  test "average team rating should be 416 (after one won games but with between unrelated games)" do
+    stats = GameStatsCollector.collect_from_games([
+      Game.parse("01/01/2023;Player A;Player B;10;0;Player C;Player D"),
+      Game.parse("01/01/2023;Player E;Player F;0;10;Player G;Player H"),
+      Game.parse("01/01/2023;Player A;Player Z;10;0;Player B;Player C")
+    ])
+    |> Enum.find(fn stats -> stats.year == 2023 end)
+
+    assert stats.player["Player G"].average_team_rating == 416
   end
 end

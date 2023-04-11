@@ -6,12 +6,13 @@ defmodule GameStats.Model.Stats do
   alias GameStats.Model.Stats
   alias GameStats.Model.GameStats
 
-  @derive {Jason.Encoder, only: [:year, :game, :team, :player]}
+  @derive {Jason.Encoder, only: [:year, :game, :team, :player, :overview]}
   defstruct [
     :year,
     :game,
     :team,
-    :player
+    :player,
+    :overview
   ]
 
   @type t :: %Stats{}
@@ -23,7 +24,8 @@ defmodule GameStats.Model.Stats do
       year: year,
       game: GameStats.new(),
       team: %{},
-      player: %{}
+      player: %{},
+      overview: %{team_ranking: [], player_ranking: []}
     }
   end
 end

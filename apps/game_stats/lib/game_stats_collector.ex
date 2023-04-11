@@ -47,6 +47,7 @@ defmodule GameStatsCollector do
 
   defp collect_summary(%Stats{} = stats) do
     stats
+    |> Collector.summary(GameStats.Collectors.Overview)
     |> Collector.summary(GameStats.Collectors.Counters)
     |> Collector.summary(GameStats.Collectors.Ratings)
   end

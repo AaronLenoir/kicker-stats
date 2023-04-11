@@ -54,7 +54,9 @@ defmodule GameStats.Collectors.Ratings do
   end
 
   def summary(%Stats{} = stats) do
-    %{stats | player: update_highest_ranking_team(stats.team, stats.player)}
+    %{stats |
+      player: update_highest_ranking_team(stats.overview, stats.player)
+              |> update_average_team_rating(stats.team)}
   end
 
   defp update_highest_rating(%{rating: rating, highest_rating: highest_rating} = ratings)
@@ -64,19 +66,30 @@ defmodule GameStats.Collectors.Ratings do
 
   defp update_highest_rating(ratings), do: ratings
 
-  defp update_highest_ranking_team(%{} = team_stats, %{} = player_stats) do
+  defp update_highest_ranking_team(%{} = overview, %{} = player_stats) do
     Map.keys(player_stats)
-    |> Enum.reduce(player_stats, fn player, acc -> %{acc | player => player_stats[player] |> update_highest_ranking_team(team_stats, player)} end)
+    |> Enum.reduce(player_stats, fn player, acc -> %{acc | player => player_stats[player] |> update_highest_ranking_team(overview, player)} end)
   end
 
-  defp update_highest_ranking_team(%PlayerStats{} = stats, %{} = team_stats, player) do
-    # TODO: If we have the overview, we have the full team ranking, which is an ordered list
-    # so then we can just get the first team with that player instead of doing this contraption here
-    first_team = Map.keys(team_stats)
-    |> Enum.filter(fn x -> String.contains?(x, player) end)
-    |> Enum.sort(fn x, y -> team_stats[x].rating >= team_stats[y].rating end)
+  defp update_highest_ranking_team(%PlayerStats{} = stats, %{} = overview, player) do
+    {first_team, index} = overview.team_ranking
+    |> Enum.with_index()
+    |> Enum.filter(fn {x, _} -> Map.keys(x) |> List.first() |> String.contains?(player) end)
     |> List.first()
 
-    %{stats | highest_ranking_team: %{team: first_team, rating: team_stats[first_team].rating}}
+    %{stats | highest_ranking_team: %{Map.keys(first_team) |> List.first() => index + 1}}
+  end
+
+  defp update_average_team_rating(%{} = player_stats, %{} = team_stats) do
+    Map.keys(player_stats)
+    |> Enum.reduce(player_stats, fn player, acc -> %{acc | player => update_average_team_rating(player_stats[player], team_stats, player)} end)
+  end
+
+  defp update_average_team_rating(%PlayerStats{} = stats, %{} = team_stats, player) do
+    {count, total_rating} = Map.keys(team_stats)
+    |> Enum.filter(fn x -> x |> String.starts_with?("#{player} ") or x |> String.ends_with?(" #{player}") end)
+    |> Enum.reduce({0, 0}, fn x, {count, total_rating} -> {count + 1, total_rating + team_stats[x].rating} end)
+
+    %{stats | average_team_rating: total_rating/ count}
   end
 end
